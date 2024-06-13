@@ -6,4 +6,7 @@ document.getElementById('saveButton').addEventListener('click', function() {
       }
     });
   });
-  
+
+  document.getElementById('viewWorkspacesButton').addEventListener('click', function() {
+    chrome.tabs.create({url: chrome.runtime.getURL("index.html")});
+  });

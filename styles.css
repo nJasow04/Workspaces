@@ -1,0 +1,38 @@
+:root {
+    --bg-color: rgb(20,20,20);
+    --project-color: rgb(19,19,19);
+    --purple: rgb(123, 31, 162);
+    --violet: rgb(103, 58, 183);
+    --pink: rgb(244, 143, 177);
+    --g1: rgb(123, 31, 162);
+    --g2: rgb(103, 58, 183);
+    --g3: rgb(244, 143, 177);
+    --dark: rgb(20, 20, 20);
+    --yellow: rgb(253, 216, 53);
+    --blue: rgb(98, 0, 234);
+    --navlink: #9b7ede;
+    --navlink-hover: #067ded;
+    /* --navlink-hover: #067ded; */
+    
+    --c1: rgb(3, 7, 18);
+    --c2: rgb(137, 187, 254);
+    --c3: rgb(172, 212, 255);
+    --link-color: var(0, 26, 255);
+
+    
+    --left-color: var(--c1);
+    /* --right-color: var(--c2); */
+    --right-color: #9b7ede;
+    /* --right-color: #FE4A49; */
+}
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: #eef4ed;
+    font-family: "Open Sans", sans-serif;
+    padding: 0px;
+    margin: 0px;
+}
