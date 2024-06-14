@@ -7,6 +7,14 @@ function loadWorkspaces() {
       workspaces.forEach((workspace, index) => {
         let workspaceDiv = document.createElement('div');
         workspaceDiv.className = 'workspace';
+
+        let workspaceBorderDiv = document.createElement('div');
+        workspaceBorderDiv.className = 'workspace-border';
+        workspaceDiv.appendChild(workspaceBorderDiv);
+
+        let workspaceContentDiv = document.createElement('div');
+        workspaceContentDiv.className = 'workspace-content';
+        workspaceDiv.appendChild(workspaceContentDiv);
         
         let label = document.createElement('label');
         label.textContent = workspace.name;
@@ -17,9 +25,8 @@ function loadWorkspaces() {
         };
         workspaceDiv.appendChild(label);
         
-        let deleteButton = document.createElement('span');
-        deleteButton.textContent = 'x';
-        deleteButton.className = 'delete';
+        let deleteButton = document.createElement('i');
+        deleteButton.className = "fa-regular fa-circle-xmark delete";
         deleteButton.onclick = function() {
           if (confirm('Are you sure you want to delete this workspace?')) {
             workspaces.splice(index, 1);
@@ -59,4 +66,15 @@ function loadWorkspaces() {
   }
   
   document.addEventListener('DOMContentLoaded', loadWorkspaces);
+
+document.getElementById("workspaces").onmousemove = e => {
+    for(const project of document.getElementsByClassName("workspace")){
+        // project.onmousemove = e => handleOnMouseMove(e);
+        const rect = project.getBoundingClientRect(),
+            x = e.clientX - rect.left,
+            y = e.clientY - rect.top;
+        project.style.setProperty("--mouse-x", `${x}px`);
+        project.style.setProperty("--mouse-y", `${y}px`);
+    }
+}
   

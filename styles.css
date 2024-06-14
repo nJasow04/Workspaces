@@ -109,8 +109,6 @@ p {
   text-align: right;
 }
 
-
-
 header {
     display: flex;
     justify-content: space-between;
@@ -200,12 +198,12 @@ header {
     margin-right: auto;
 } */
 
-.portfolio-title {
+.workspace-title {
     text-align: center;
     padding-bottom: 0px;
 }
 
-.portfolio-title h2 {
+.workspace-title h2 {
     font-size: 32px;
     font-weight: bold;
     text-transform: uppercase;
@@ -215,7 +213,7 @@ header {
     color: #b084cc;
   }
 
-.portfolio-title h2::before {
+.workspace-title h2::before {
   content: "";
   position: absolute;
   display: block;
@@ -226,7 +224,7 @@ header {
   left: calc(50% - 60px);
 }
 
-.portfolio-title h2::after {
+.workspace-title h2::after {
   content: "";
   position: absolute;
   display: block;
@@ -267,15 +265,20 @@ nav > ul > li > a:hover {
     color: white;
 }
 
+
+
+
+
+
 /* Portfolio */
-#project-wrapper {
+#workspaces-wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
 
 }
 
-#projects{
+#workspaces{
     display: flex;
     flex-wrap: wrap;
     width: calc(100% - 20px);
@@ -283,7 +286,12 @@ nav > ul > li > a:hover {
     gap: 40px;
 }
 
-.project {
+
+
+
+
+
+.workspace {
     background-color: rgba(255, 255, 255, 0.1);
     /* border: 1px solid rgba(255, 255, 255, 0.1); */
     height: 260px;
@@ -293,20 +301,19 @@ nav > ul > li > a:hover {
     position: relative;
 }
 
-.project:hover::before{
+.workspace:hover::before{
     opacity: 1;
 }
-
-#projects:hover > .project > .project-border {
-    opacity: 1;
+.workspace:hover > .workspace-border {
+    opacity: 0.8;
 }
 
-.project::before {
-    background: radial-gradient(
+.workspace::before {
+    /* background: radial-gradient(
         800px circle at var(--mouse-x) var(--mouse-y),
         rgba(255, 255, 255, 0.06),
         transparent 40%
-    );
+    ); */
     height: 100%;
     width: 100%;
     border-radius: inherit;
@@ -318,7 +325,7 @@ nav > ul > li > a:hover {
     transition: opacity 500ms;
 }
 
-.project > .project-content {
+.workspace > .workspace-content {
     height: calc(100% - 2px);
     width: calc(100% - 2px);
     background-color: var(--project-color);
@@ -328,12 +335,13 @@ nav > ul > li > a:hover {
     position: relative;
 }
 
-.project > .project-border {
-    background: radial-gradient(
+.workspace > .workspace-border {
+    /* background: radial-gradient(
         400px circle at var(--mouse-x) var(--mouse-y),
         rgba(255, 255, 255, 0.6),
         transparent 40%
-    );
+    ); */
+    background: rgba(255, 255, 255, 0.5);
     height: 100%;
     width: 100%;
     border-radius: inherit;
@@ -342,5 +350,22 @@ nav > ul > li > a:hover {
     top: 0%;
     z-index: 1;
     opacity: 0;
-    transition: opacity 500ms;
+    transition: opacity 500ms; /* Add transition here */
 }
+
+/* .workspace:hover > .delete {
+  display: block;
+} */
+
+
+/* .delete:before {
+  content: '✕';
+} */
+.delete {
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+}
+
+
