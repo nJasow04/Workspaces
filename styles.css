@@ -353,19 +353,24 @@ nav > ul > li > a:hover {
     transition: opacity 500ms; /* Add transition here */
 }
 
-/* .workspace:hover > .delete {
-  display: block;
-} */
-
-
-/* .delete:before {
-  content: '✕';
-} */
 .delete {
   position: absolute;
   top: 0;
   right: 0;
   cursor: pointer;
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 300ms;
+  background: none;
+  border: none;
+  color: white; 
+  padding-top: 5px;
 }
 
+.workspace:hover .delete {
+  opacity: 0.5;
+}
 
+.workspace:hover .delete:hover {
+  opacity: 0.8;
+}

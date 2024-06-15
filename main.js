@@ -25,8 +25,9 @@ function loadWorkspaces() {
         };
         workspaceDiv.appendChild(label);
         
-        let deleteButton = document.createElement('i');
-        deleteButton.className = "fa-regular fa-circle-xmark delete";
+        let deleteButton = document.createElement('button');
+        deleteButton.className = "delete";
+        deleteButton.innerHTML = '<i class="gg-close-o"></i>';
         deleteButton.onclick = function() {
           if (confirm('Are you sure you want to delete this workspace?')) {
             workspaces.splice(index, 1);
@@ -61,11 +62,12 @@ function loadWorkspaces() {
     });
   }
   
-  function saveWorkspaces(workspaces) {
+function saveWorkspaces(workspaces) {
     chrome.storage.local.set({workspaces: workspaces});
-  }
+}
   
-  document.addEventListener('DOMContentLoaded', loadWorkspaces);
+document.addEventListener('DOMContentLoaded', loadWorkspaces);
+
 
 document.getElementById("workspaces").onmousemove = e => {
     for(const project of document.getElementsByClassName("workspace")){
