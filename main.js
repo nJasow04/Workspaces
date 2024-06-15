@@ -36,6 +36,20 @@ function loadWorkspaces() {
           }
         };
         workspaceDiv.appendChild(deleteButton);
+
+        let startButton = document.createElement('button');
+        startButton.className = "start";
+        // startButton.innerHTML = '<i class="gg-close-o"></i>';
+        startButton.innerHTML = '<i class="gg-play-button-o"></i>';
+        startButton.onclick = function() {
+        //   if (confirm('Are you sure you want to delete this workspace?')) {
+        //     workspaces.splice(index, 1);
+        //     saveWorkspaces(workspaces);
+        //     loadWorkspaces();
+        //   }
+        };
+        workspaceDiv.appendChild(startButton);
+
         
         let showTabsButton = document.createElement('span');
         showTabsButton.textContent = '>';

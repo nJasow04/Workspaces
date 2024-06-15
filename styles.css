@@ -358,7 +358,7 @@ nav > ul > li > a:hover {
   top: 0;
   right: 0;
   cursor: pointer;
-  z-index: 3;
+  z-index: 5;
   opacity: 0;
   transition: opacity 300ms;
   background: none;
@@ -374,3 +374,28 @@ nav > ul > li > a:hover {
 .workspace:hover .delete:hover {
   opacity: 0.8;
 }
+
+
+.start {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  cursor: pointer;
+  transform: translate(-50%, -50%) scale(2);
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 300ms;
+  background: none;
+  border: none;
+  color: white; 
+  padding-top: 5px;
+}
+
+.workspace:hover .start {
+  opacity: 0.5;
+}
+
+.workspace:hover .start:hover {
+  opacity: 0.8;
+}
+
