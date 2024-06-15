@@ -42,11 +42,15 @@ function loadWorkspaces() {
         // startButton.innerHTML = '<i class="gg-close-o"></i>';
         startButton.innerHTML = '<i class="gg-play-button-o"></i>';
         startButton.onclick = function() {
-        //   if (confirm('Are you sure you want to delete this workspace?')) {
-        //     workspaces.splice(index, 1);
-        //     saveWorkspaces(workspaces);
-        //     loadWorkspaces();
-        //   }
+            let urls = [chrome.runtime.getURL("index.html"), ...workspace.tabs];
+
+            // Open all links in a new window
+            chrome.windows.create({url: urls}, function(newWindow) {
+                // Close the current tab
+                chrome.tabs.getCurrent(function(tab) {
+                  chrome.tabs.remove(tab.id);
+                });
+              });
         };
         workspaceDiv.appendChild(startButton);
 
