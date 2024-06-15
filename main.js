@@ -65,9 +65,13 @@ function loadWorkspaces() {
 function saveWorkspaces(workspaces) {
     chrome.storage.local.set({workspaces: workspaces});
 }
-  
-document.addEventListener('DOMContentLoaded', loadWorkspaces);
 
+// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+//     if (request.action === "workspaceSaved") {
+//       loadWorkspaces();
+//     }
+//   });
+document.addEventListener('DOMContentLoaded', loadWorkspaces);
 
 document.getElementById("workspaces").onmousemove = e => {
     for(const project of document.getElementsByClassName("workspace")){
@@ -80,3 +84,8 @@ document.getElementById("workspaces").onmousemove = e => {
     }
 }
   
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+    if (namespace === 'local' && changes.workspaces) {
+      loadWorkspaces();
+    }
+  });

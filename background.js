@@ -14,6 +14,9 @@ chrome.runtime.onInstalled.addListener(() => {
         workspaces.push(workspace);
         chrome.storage.local.set({workspaces: workspaces}, () => {
           console.log("Workspace saved.");
+
+          // chrome.runtime.sendMessage({action: "workspaceSaved"});
+
         });
       });
     });
