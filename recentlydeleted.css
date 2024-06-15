@@ -1,0 +1,22 @@
+.redo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    cursor: pointer;
+    transform: translate(-50%, -50%) scale(2);
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 300ms;
+    background: none;
+    border: none;
+    color: white; 
+    padding-top: 5px;
+}
+
+.workspace:hover .redo {
+    opacity: 0.5;
+}
+
+.workspace:hover .redo:hover {
+    opacity: 0.8;
+}

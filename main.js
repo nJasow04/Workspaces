@@ -16,22 +16,39 @@ function loadWorkspaces() {
         workspaceContentDiv.className = 'workspace-content';
         workspaceDiv.appendChild(workspaceContentDiv);
         
-        let label = document.createElement('label');
-        label.textContent = workspace.name;
-        label.contentEditable = true;
-        label.onblur = function() {
-          workspace.name = label.textContent.trim() || 'Untitled';
-          saveWorkspaces(workspaces);
+        // let label = document.createElement('label');
+        // label.textContent = workspace.name;
+        // label.innerHTML = `<h3>${workspace.name}</h3>`;
+        // label.contentEditable = true;
+        // label.onblur = function() {
+        //   workspace.name = label.textContent.trim() || 'Untitled';
+        //   saveWorkspaces(workspaces);
+        // };
+        // workspaceContentDiv.appendChild(label);
+        let label = document.createElement('div'); // Use a div to wrap the h3 element
+        label.className = 'label';
+
+        let editableHeading = document.createElement('h3');
+        editableHeading.textContent = workspace.name;
+        editableHeading.contentEditable = true; // Make the h3 element editable
+        // editableHeading.style.display = 'inline-block'; // Ensure it's editable
+        // editableHeading.style.zIndex = 5;
+        editableHeading.onblur = function() {
+            workspace.name = editableHeading.textContent.trim() || 'Untitled';
+            saveWorkspaces(workspaces);
         };
-        workspaceDiv.appendChild(label);
+
+        label.appendChild(editableHeading);
+        workspaceContentDiv.appendChild(label);
         
         let deleteButton = document.createElement('button');
         deleteButton.className = "delete";
         deleteButton.innerHTML = '<i class="gg-close-o"></i>';
         deleteButton.onclick = function() {
           if (confirm('Are you sure you want to delete this workspace?')) {
-            workspaces.splice(index, 1);
+            let deletedWorkspace = workspaces.splice(index, 1)[0];
             saveWorkspaces(workspaces);
+            saveRecentlyDeleted(deletedWorkspace);
             loadWorkspaces();
           }
         };
@@ -107,3 +124,16 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
       loadWorkspaces();
     }
   });
+
+
+
+  function saveRecentlyDeleted(deletedWorkspace) {
+    chrome.storage.local.get({recentlyDeleted: []}, function(result) {
+      let recentlyDeleted = result.recentlyDeleted;
+      recentlyDeleted.unshift(deletedWorkspace); // Add to the beginning of the array
+      if (recentlyDeleted.length > 4) {
+        recentlyDeleted.pop(); // Remove the oldest item if there are more than 3
+      }
+      chrome.storage.local.set({recentlyDeleted: recentlyDeleted});
+    });
+  }
