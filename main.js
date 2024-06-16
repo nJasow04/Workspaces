@@ -138,18 +138,38 @@ function saveRecentlyDeleted(deletedWorkspace) {
 
 
 function fetchFaviconAndTitle(tabUrl, callback) {
-    // Use the fetch API to get the tab details
     fetch(tabUrl).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.text();
+    }).then(htmlString => {
         let parser = new DOMParser();
-        return response.text().then(htmlString => {
-            let doc = parser.parseFromString(htmlString, "text/html");
-            let favicon = doc.querySelector("link[rel~='icon']") ? doc.querySelector("link[rel~='icon']").href : 'Media/default-favicon.jpg';
-            let title = doc.querySelector("title") ? doc.querySelector("title").innerText : tabUrl;
-            callback(favicon, title);
-        });
+        let doc = parser.parseFromString(htmlString, "text/html");
+        let head = doc.head;
+        let favicon = 'Media/default-favicon.png'; // Default favicon
+
+        // Try to find the favicon with preferred attributes
+        let iconLink = head.querySelector("link[rel='icon']") || 
+                       head.querySelector("link[rel='shortcut icon']") || 
+                       head.querySelector("link[rel='apple-touch-icon']") ||
+                       head.querySelector("link[rel~='icon']");
+
+        if (iconLink) {
+            favicon = iconLink.href;
+        }
+        let title = head.querySelector("title") ? head.querySelector("title").innerText : getDomainName(tabUrl);
+        callback(favicon, title);
     }).catch(() => {
-        callback('', tabUrl);
+        callback('Media/default-favicon.png', getDomainName(tabUrl));
     });
+}
+
+function getDomainName(url) {
+    let domain = (new URL(url)).hostname;
+    domain = domain.replace('www.', ''); // Remove 'www.' if present
+    let domainName = domain.split('.')[0]; // Get the part between 'www.' and '.com' or similar
+    return domainName.charAt(0).toUpperCase() + domainName.slice(1); // Capitalize the first letter
 }
 
 
