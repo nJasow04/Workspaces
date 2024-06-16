@@ -140,46 +140,6 @@ a:hover {
 
 
 
-/* Back to top */
-.back-to-top {
-  position: fixed;
-  visibility: hidden;
-  opacity: 0;
-  right: 15px;
-  bottom: 15px;
-  z-index: 996;
-  background: #b084cc;
-  width: 40px;
-  height: 40px;
-  border-radius: 50px;
-  transition: all 0.4s;
-}
-
-.back-to-top i {
-  font-size: 28px;
-  color: #fff;
-  line-height: 0;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  height: 100%;
-}
-
-.back-to-top:hover {
-  background: #9b7ede;
-  color: #fff;
-}
-
-.back-to-top.active {
-  visibility: visible;
-  opacity: 1;
-}
-
-
-
-
-
-
 /* Portfolio */
 
 header {
@@ -403,15 +363,39 @@ nav > ul > li > a:hover {
 .label {
   position: absolute;
   width: 100%;
+  /* left: 50%; */
   /* padding: 5px; */
-  padding-top: 15px;
+
+  padding-top: 10px;
   text-align: center;
   font-size: 12px;
   color: white;
   z-index: 5;
+
+}
+
+.tab-wrapper {
+  padding-top: 25px;
+  z-index: 5;
 }
 
 
+.tab-item {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+}
 
+.favicon {
+  width: 12px;
+  height: 12px;
+  margin-right: 5px;
+  padding-left: 10px;
+}
+
+.tab-title {
+  font-size: 12px;
+  color: white;
+}
 
 

@@ -16,30 +16,17 @@ function loadWorkspaces() {
         workspaceContentDiv.className = 'workspace-content';
         workspaceDiv.appendChild(workspaceContentDiv);
         
-        // let label = document.createElement('label');
-        // label.textContent = workspace.name;
-        // label.innerHTML = `<h3>${workspace.name}</h3>`;
-        // label.contentEditable = true;
-        // label.onblur = function() {
-        //   workspace.name = label.textContent.trim() || 'Untitled';
-        //   saveWorkspaces(workspaces);
-        // };
-        // workspaceContentDiv.appendChild(label);
-        let label = document.createElement('div'); // Use a div to wrap the h3 element
+        let label = document.createElement('div');
         label.className = 'label';
-
-        let editableHeading = document.createElement('h3');
-        editableHeading.textContent = workspace.name;
-        editableHeading.contentEditable = true; // Make the h3 element editable
-        // editableHeading.style.display = 'inline-block'; // Ensure it's editable
-        // editableHeading.style.zIndex = 5;
-        editableHeading.onblur = function() {
-            workspace.name = editableHeading.textContent.trim() || 'Untitled';
-            saveWorkspaces(workspaces);
+        label.textContent = workspace.name;
+        // label.innerHTML = `<h3>${workspace.name}</h3>`;
+        label.contentEditable = true;
+        label.onblur = function() {
+          workspace.name = label.textContent.trim() || 'Untitled';
+          saveWorkspaces(workspaces);
         };
+        workspaceDiv.appendChild(label);
 
-        label.appendChild(editableHeading);
-        workspaceContentDiv.appendChild(label);
         
         let deleteButton = document.createElement('button');
         deleteButton.className = "delete";
@@ -72,25 +59,49 @@ function loadWorkspaces() {
         workspaceDiv.appendChild(startButton);
 
         
-        let showTabsButton = document.createElement('span');
-        showTabsButton.textContent = '>';
-        showTabsButton.className = 'show-tabs';
-        showTabsButton.onclick = function() {
-          let tabsList = document.createElement('ul');
-          workspace.tabs.forEach(tab => {
-            let tabItem = document.createElement('li');
-            tabItem.textContent = tab;
-            tabsList.appendChild(tabItem);
-          });
-          if (showTabsButton.textContent === '>') {
-            workspaceDiv.appendChild(tabsList);
-            showTabsButton.textContent = 'v';
-          } else {
-            workspaceDiv.removeChild(workspaceDiv.lastChild);
-            showTabsButton.textContent = '>';
-          }
-        };
-        workspaceDiv.appendChild(showTabsButton);
+        // let showTabsButton = document.createElement('span');
+        // showTabsButton.textContent = '>';
+        // showTabsButton.className = 'show-tabs';
+        // showTabsButton.onclick = function() {
+        //   let tabsList = document.createElement('ul');
+        //   workspace.tabs.forEach(tab => {
+        //     let tabItem = document.createElement('li');
+        //     tabItem.textContent = tab;
+        //     tabsList.appendChild(tabItem);
+        //   });
+        //   if (showTabsButton.textContent === '>') {
+        //     workspaceDiv.appendChild(tabsList);
+        //     showTabsButton.textContent = 'v';
+        //   } else {
+        //     workspaceDiv.removeChild(workspaceDiv.lastChild);
+        //     showTabsButton.textContent = '>';
+        //   }
+        // };
+        // workspaceDiv.appendChild(showTabsButton);
+        let tabWrapper = document.createElement('div');
+        tabWrapper.className = "tab-wrapper";
+        workspaceContentDiv.appendChild(tabWrapper);
+
+        workspace.tabs.forEach(tabUrl => {
+            let tabItemDiv = document.createElement('div');
+            tabItemDiv.className = 'tab-item';
+
+            // Fetch the favicon and title using Chrome API
+            fetchFaviconAndTitle(tabUrl, function(faviconUrl, title) {
+                let faviconImg = document.createElement('img');
+                faviconImg.src = faviconUrl;
+                faviconImg.className = 'favicon';
+
+                let titleSpan = document.createElement('span');
+                titleSpan.textContent = title;
+                titleSpan.className = 'tab-title';
+
+                tabItemDiv.appendChild(faviconImg);
+                tabItemDiv.appendChild(titleSpan);
+            });
+
+            tabWrapper.appendChild(tabItemDiv);
+        });
         
         workspaceContainer.appendChild(workspaceDiv);
       });
@@ -101,39 +112,58 @@ function saveWorkspaces(workspaces) {
     chrome.storage.local.set({workspaces: workspaces});
 }
 
-// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-//     if (request.action === "workspaceSaved") {
-//       loadWorkspaces();
-//     }
-//   });
 document.addEventListener('DOMContentLoaded', loadWorkspaces);
 
-document.getElementById("workspaces").onmousemove = e => {
-    for(const project of document.getElementsByClassName("workspace")){
-        // project.onmousemove = e => handleOnMouseMove(e);
-        const rect = project.getBoundingClientRect(),
-            x = e.clientX - rect.left,
-            y = e.clientY - rect.top;
-        project.style.setProperty("--mouse-x", `${x}px`);
-        project.style.setProperty("--mouse-y", `${y}px`);
-    }
-}
-  
+
+
+
 chrome.storage.onChanged.addListener(function(changes, namespace) {
     if (namespace === 'local' && changes.workspaces) {
-      loadWorkspaces();
+        loadWorkspaces();
     }
-  });
+});
 
 
-
-  function saveRecentlyDeleted(deletedWorkspace) {
+function saveRecentlyDeleted(deletedWorkspace) {
     chrome.storage.local.get({recentlyDeleted: []}, function(result) {
-      let recentlyDeleted = result.recentlyDeleted;
-      recentlyDeleted.unshift(deletedWorkspace); // Add to the beginning of the array
-      if (recentlyDeleted.length > 4) {
-        recentlyDeleted.pop(); // Remove the oldest item if there are more than 3
-      }
-      chrome.storage.local.set({recentlyDeleted: recentlyDeleted});
+        let recentlyDeleted = result.recentlyDeleted;
+        recentlyDeleted.unshift(deletedWorkspace); // Add to the beginning of the array
+        if (recentlyDeleted.length > 4) {
+            recentlyDeleted.pop(); // Remove the oldest item if there are more than 3
+        }
+        chrome.storage.local.set({recentlyDeleted: recentlyDeleted});
     });
-  }
+}
+
+
+
+function fetchFaviconAndTitle(tabUrl, callback) {
+    // Use the fetch API to get the tab details
+    fetch(tabUrl).then(response => {
+        let parser = new DOMParser();
+        return response.text().then(htmlString => {
+            let doc = parser.parseFromString(htmlString, "text/html");
+            let favicon = doc.querySelector("link[rel~='icon']") ? doc.querySelector("link[rel~='icon']").href : 'Media/default-favicon.jpg';
+            let title = doc.querySelector("title") ? doc.querySelector("title").innerText : tabUrl;
+            callback(favicon, title);
+        });
+    }).catch(() => {
+        callback('', tabUrl);
+    });
+}
+
+
+
+
+
+
+// document.getElementById("workspaces").onmousemove = e => {
+//     for(const project of document.getElementsByClassName("workspace")){
+//         // project.onmousemove = e => handleOnMouseMove(e);
+//         const rect = project.getBoundingClientRect(),
+//             x = e.clientX - rect.left,
+//             y = e.clientY - rect.top;
+//         project.style.setProperty("--mouse-x", `${x}px`);
+//         project.style.setProperty("--mouse-y", `${y}px`);
+//     }
+// }
