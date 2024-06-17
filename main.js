@@ -18,13 +18,45 @@ function loadWorkspaces() {
         
         let label = document.createElement('div');
         label.className = 'label';
+        if(workspace.name === 'Untitled') {
+            label.style.opacity = 0.5;
+        }else{
+            label.style.opacity = 1;
+        }
         label.textContent = workspace.name;
-        // label.innerHTML = `<h3>${workspace.name}</h3>`;
         label.contentEditable = true;
-        label.onblur = function() {
-          workspace.name = label.textContent.trim() || 'Untitled';
-          saveWorkspaces(workspaces);
+
+        label.onkeydown = function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                label.blur(); // Deselect the label
+            } else if (label.textContent.length >= 25 && e.key !== 'Backspace' && e.key !== 'Delete') {
+                e.preventDefault();
+            }
         };
+
+        label.onblur = function() {
+            let trimmedText = label.textContent.trim();
+            if (trimmedText.length === 0) {
+                label.textContent = 'Untitled';
+                workspace.name = 'Untitled';
+                label.style.opacity = 0.5;
+            } else {
+                workspace.name = trimmedText;
+            }
+            saveWorkspaces(workspaces);
+        };
+
+        label.onclick = function() {
+            label.style.opacity = 1;
+        };
+
+        document.addEventListener('click', function(event) {
+            if (event.target !== label && label.textContent.trim() === 'Untitled') {
+                label.style.opacity = 0.8;
+            }
+        });
+
         workspaceDiv.appendChild(label);
 
         
@@ -58,26 +90,6 @@ function loadWorkspaces() {
         };
         workspaceDiv.appendChild(startButton);
 
-        
-        // let showTabsButton = document.createElement('span');
-        // showTabsButton.textContent = '>';
-        // showTabsButton.className = 'show-tabs';
-        // showTabsButton.onclick = function() {
-        //   let tabsList = document.createElement('ul');
-        //   workspace.tabs.forEach(tab => {
-        //     let tabItem = document.createElement('li');
-        //     tabItem.textContent = tab;
-        //     tabsList.appendChild(tabItem);
-        //   });
-        //   if (showTabsButton.textContent === '>') {
-        //     workspaceDiv.appendChild(tabsList);
-        //     showTabsButton.textContent = 'v';
-        //   } else {
-        //     workspaceDiv.removeChild(workspaceDiv.lastChild);
-        //     showTabsButton.textContent = '>';
-        //   }
-        // };
-        // workspaceDiv.appendChild(showTabsButton);
         let tabWrapper = document.createElement('div');
         tabWrapper.className = "tab-wrapper";
         workspaceContentDiv.appendChild(tabWrapper);
@@ -136,34 +148,92 @@ function saveRecentlyDeleted(deletedWorkspace) {
 }
 
 
-
 function fetchFaviconAndTitle(tabUrl, callback) {
-    fetch(tabUrl).then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.text();
-    }).then(htmlString => {
-        let parser = new DOMParser();
-        let doc = parser.parseFromString(htmlString, "text/html");
-        let head = doc.head;
-        let favicon = 'Media/default-favicon.png'; // Default favicon
+    chrome.storage.local.get([tabUrl], function(result) {
+        if (result[tabUrl]) {
+            // Data is already stored
+            callback(result[tabUrl].favicon, result[tabUrl].title);
+        } else {
+            // Data not stored, fetch it
+            fetch(tabUrl).then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            }).then(htmlString => {
+                let parser = new DOMParser();
+                let doc = parser.parseFromString(htmlString, "text/html");
+                let head = doc.head;
+                let favicon = 'Media/default-favicon.png'; // Default favicon
 
-        // Try to find the favicon with preferred attributes
-        let iconLink = head.querySelector("link[rel='icon']") || 
-                       head.querySelector("link[rel='shortcut icon']") || 
-                       head.querySelector("link[rel='apple-touch-icon']") ||
-                       head.querySelector("link[rel~='icon']");
+                // Try to find the favicon with preferred attributes
+                let iconLink = head.querySelector("link[rel='icon']") || 
+                               head.querySelector("link[rel='shortcut icon']") || 
+                               head.querySelector("link[rel='apple-touch-icon']") ||
+                               head.querySelector("link[rel~='icon']");
 
-        if (iconLink) {
-            favicon = iconLink.href;
+                if (iconLink) {
+                    favicon = iconLink.href;
+                }
+                let title = head.querySelector("title") ? head.querySelector("title").innerText : getDomainName(tabUrl);
+
+                // Store the favicon and title
+                let dataToStore = {};
+                dataToStore[tabUrl] = { favicon: favicon, title: title };
+                chrome.storage.local.set(dataToStore, function() {
+                    callback(favicon, title);
+                });
+            }).catch(() => {
+                let fallbackData = {
+                    favicon: 'Media/default-favicon.png',
+                    title: getDomainName(tabUrl)
+                };
+                let dataToStore = {};
+                dataToStore[tabUrl] = fallbackData;
+                chrome.storage.local.set(dataToStore, function() {
+                    callback(fallbackData.favicon, fallbackData.title);
+                });
+            });
         }
-        let title = head.querySelector("title") ? head.querySelector("title").innerText : getDomainName(tabUrl);
-        callback(favicon, title);
-    }).catch(() => {
-        callback('Media/default-favicon.png', getDomainName(tabUrl));
     });
 }
+
+
+// function fetchFaviconAndTitle(tabUrl, callback) {
+//     fetch(tabUrl).then(response => {
+//         if (!response.ok) {
+//             throw new Error('Network response was not ok');
+//         }
+//         return response.text();
+//     }).then(htmlString => {
+//         let parser = new DOMParser();
+//         let doc = parser.parseFromString(htmlString, "text/html");
+//         let head = doc.head;
+//         let favicon = 'Media/default-favicon.png'; // Default favicon
+
+//         // Try to find the favicon with preferred attributes
+//         let iconLink = head.querySelector("link[rel='icon']") || 
+//                        head.querySelector("link[rel='shortcut icon']") || 
+//                        head.querySelector("link[rel='apple-touch-icon']") ||
+//                        head.querySelector("link[rel~='icon']");
+
+//         if (iconLink) {
+//             favicon = iconLink.href;
+//         }
+//         let title = head.querySelector("title") ? head.querySelector("title").innerText : getDomainName(tabUrl);
+        
+//         // Store the favicon and title
+//         let dataToStore = {};
+//         dataToStore[tabUrl] = { favicon: favicon, title: title };
+//         chrome.storage.local.set(dataToStore, function() {
+//             callback(favicon, title);
+//         });
+
+//         // callback(favicon, title);
+//     }).catch(() => {
+//         callback('Media/default-favicon.png', getDomainName(tabUrl));
+//     });
+// }
 
 function getDomainName(url) {
     let domain = (new URL(url)).hostname;

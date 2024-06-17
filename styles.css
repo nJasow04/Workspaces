@@ -257,8 +257,10 @@ nav > ul > li > a:hover {
     height: 260px;
     width: 300px;
     border-radius: 10px;
-    cursor: pointer;
+    /* cursor: pointer; */
     position: relative;
+    /* overflow: hidden; */
+    pointer-events: auto;
 }
 
 .workspace:hover::before{
@@ -293,6 +295,8 @@ nav > ul > li > a:hover {
     margin: 1px;
     z-index: 2;
     position: absolute;
+    overflow: hidden;
+    pointer-events: auto;
 }
 
 .workspace > .workspace-border {
@@ -324,44 +328,52 @@ nav > ul > li > a:hover {
   background: none;
   border: none;
   color: white; 
-  padding-top: 5px;
+  margin-top: 5px;
 }
 
 .workspace:hover .delete {
-  opacity: 0.5;
+  opacity: 0.7;
 }
 
 .workspace:hover .delete:hover {
-  opacity: 0.8;
+  opacity: 1.2;
 }
 
 
 .start {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  /* top: 50%; */
+  top: 0;
+  right: 0;
   cursor: pointer;
-  transform: translate(-50%, -50%) scale(2);
+  /* transform: translate(-50%, -50%); */
+  /* transform: translate(-50%, -50%) scale(2); */
   z-index: 5;
   opacity: 0;
   transition: opacity 300ms;
   background: none;
   border: none;
   color: white; 
-  padding-top: 5px;
+  margin-top: 33px;
+  /* margin-right: 0px; */
 }
 
 .workspace:hover .start {
-  opacity: 0.5;
+  opacity: 0.7;
 }
 
 .workspace:hover .start:hover {
-  opacity: 0.8;
+  opacity:1.2;
 }
 
-.workspace-content:hover .tab-wrapper {
-  opacity: 0.6;
-}
+ 
+.workspace:hover .tab-wrapper {
+  opacity: 0.9;
+} 
+
+/* .workspace:hover .label:hover {
+  opacity: 0.8;
+} */
 
 .label {
   position: absolute;
@@ -378,16 +390,44 @@ nav > ul > li > a:hover {
   text-align: center;
   font-size: 15px;
   color: white;
-  z-index: 5;
+  z-index: 9;
   font-weight: bold;
-
+  opacity: 1;
+  transition: opacity 150ms;
+  width: 80%;
+  
 }
 
-.tab-wrapper {
-  padding-top: 27px;
-  z-index: 5;
+.workspace-content > .tab-wrapper {
+  margin-top: 25px;
+  padding-top: 5px;
+  z-index: 7;
   opacity: 1;
   transition: opacity 300ms;
+  margin-right: 30px;
+  margin-left: 0px;
+  max-height: 220px; /* Adjust the height as needed */
+  overflow-y: auto; /* Make it scrollable */
+  pointer-events: auto;
+  direction: rtl;
+}
+
+/* Scrollbar styling */
+.tab-wrapper::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tab-wrapper::-webkit-scrollbar-track {
+  background: var(--project-color); 
+}
+
+.tab-wrapper::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 0px;
+}
+
+.tab-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #555; 
 }
 
 
@@ -395,6 +435,7 @@ nav > ul > li > a:hover {
   display: flex;
   align-items: center;
   padding: 5px;
+  direction: ltr;
 }
 
 .favicon {
@@ -408,5 +449,6 @@ nav > ul > li > a:hover {
   font-size: 12px;
   color: white;
 }
+
 
 
