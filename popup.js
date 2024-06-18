@@ -9,5 +9,12 @@ document.getElementById('saveButton').addEventListener('click', function() {
   });
 
   document.getElementById('viewWorkspacesButton').addEventListener('click', function() {
-    chrome.tabs.create({url: chrome.runtime.getURL("index.html")});
-  });
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        let currentTab = tabs[0];
+        if (currentTab.url === "chrome://newtab/" || currentTab.url === "about:blank") {
+            chrome.tabs.update(currentTab.id, {url: chrome.runtime.getURL("index.html")});
+        } else {
+            chrome.tabs.create({url: chrome.runtime.getURL("index.html")});
+        }
+    });
+});

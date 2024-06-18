@@ -20,3 +20,7 @@
 .workspace:hover .redo:hover {
     opacity: 0.8;
 }
+
+.workspace:hover .tab-wrapper {
+    opacity: 0.6;
+  } 
