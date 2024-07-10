@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "Workspaces",
     "version": "1.0",
-    "permissions": ["tabs", "storage", "windows", "webRequest", "favicon"],
+    "permissions": ["tabs", "storage", "windows", "favicon"],
     "background": {
       "service_worker": "background.js"
     },
