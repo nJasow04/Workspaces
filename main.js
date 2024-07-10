@@ -147,56 +147,111 @@ function saveRecentlyDeleted(deletedWorkspace) {
     });
 }
 
-
 function fetchFaviconAndTitle(tabUrl, callback) {
+    if (tabUrl.startsWith("chrome")) {
+      callback('Media/default-favicon.png', getDomainName(tabUrl));
+      return;
+    }
+  
     chrome.storage.local.get([tabUrl], function(result) {
-        if (result[tabUrl]) {
-            // Data is already stored
-            callback(result[tabUrl].favicon, result[tabUrl].title);
-        } else {
-            // Data not stored, fetch it
-            fetch(tabUrl).then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            }).then(htmlString => {
-                let parser = new DOMParser();
-                let doc = parser.parseFromString(htmlString, "text/html");
-                let head = doc.head;
-                let favicon = 'Media/default-favicon.png'; // Default favicon
-
-                // Try to find the favicon with preferred attributes
-                let iconLink = head.querySelector("link[rel='icon']") || 
-                               head.querySelector("link[rel='shortcut icon']") || 
-                               head.querySelector("link[rel='apple-touch-icon']") ||
-                               head.querySelector("link[rel~='icon']");
-
-                if (iconLink) {
-                    favicon = iconLink.href;
-                }
-                let title = head.querySelector("title") ? head.querySelector("title").innerText : getDomainName(tabUrl);
-
-                // Store the favicon and title
-                let dataToStore = {};
-                dataToStore[tabUrl] = { favicon: favicon, title: title };
-                chrome.storage.local.set(dataToStore, function() {
-                    callback(favicon, title);
-                });
-            }).catch(() => {
-                let fallbackData = {
-                    favicon: 'Media/default-favicon.png',
-                    title: getDomainName(tabUrl)
-                };
-                let dataToStore = {};
-                dataToStore[tabUrl] = fallbackData;
-                chrome.storage.local.set(dataToStore, function() {
-                    callback(fallbackData.favicon, fallbackData.title);
-                });
-            });
-        }
+      if (result[tabUrl]) {
+        // Data is already stored
+        callback(result[tabUrl].favicon, result[tabUrl].title);
+      } else {
+        // Data not stored, fetch it
+        fetch(tabUrl).then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.text();
+        }).then(htmlString => {
+          let parser = new DOMParser();
+          let doc = parser.parseFromString(htmlString, "text/html");
+          let head = doc.head;
+          let favicon = 'Media/default-favicon.png'; // Default favicon
+  
+          // Try to find the favicon with preferred attributes
+          let iconLink = head.querySelector("link[rel='icon']") || 
+                         head.querySelector("link[rel='shortcut icon']") || 
+                         head.querySelector("link[rel='apple-touch-icon']") ||
+                         head.querySelector("link[rel~='icon']");
+  
+          if (iconLink) {
+            favicon = iconLink.href;
+          }
+          let title = head.querySelector("title") ? head.querySelector("title").innerText : getDomainName(tabUrl);
+  
+          // Store the favicon and title
+          let dataToStore = {};
+          dataToStore[tabUrl] = { favicon: favicon, title: title };
+          chrome.storage.local.set(dataToStore, function() {
+            callback(favicon, title);
+          });
+        }).catch(() => {
+          let fallbackData = {
+            favicon: 'Media/default-favicon.png',
+            title: getDomainName(tabUrl)
+          };
+          let dataToStore = {};
+          dataToStore[tabUrl] = fallbackData;
+          chrome.storage.local.set(dataToStore, function() {
+            callback(fallbackData.favicon, fallbackData.title);
+          });
+        });
+      }
     });
-}
+  }
+  
+
+// function fetchFaviconAndTitle(tabUrl, callback) {
+//     chrome.storage.local.get([tabUrl], function(result) {
+//         if (result[tabUrl]) {
+//             // Data is already stored
+//             callback(result[tabUrl].favicon, result[tabUrl].title);
+//         } else {
+//             // Data not stored, fetch it
+//             fetch(tabUrl).then(response => {
+//                 if (!response.ok) {
+//                     throw new Error('Network response was not ok');
+//                 }
+//                 return response.text();
+//             }).then(htmlString => {
+//                 let parser = new DOMParser();
+//                 let doc = parser.parseFromString(htmlString, "text/html");
+//                 let head = doc.head;
+//                 let favicon = 'Media/default-favicon.png'; // Default favicon
+
+//                 // Try to find the favicon with preferred attributes
+//                 let iconLink = head.querySelector("link[rel='icon']") || 
+//                                head.querySelector("link[rel='shortcut icon']") || 
+//                                head.querySelector("link[rel='apple-touch-icon']") ||
+//                                head.querySelector("link[rel~='icon']");
+
+//                 if (iconLink) {
+//                     favicon = iconLink.href;
+//                 }
+//                 let title = head.querySelector("title") ? head.querySelector("title").innerText : getDomainName(tabUrl);
+
+//                 // Store the favicon and title
+//                 let dataToStore = {};
+//                 dataToStore[tabUrl] = { favicon: favicon, title: title };
+//                 chrome.storage.local.set(dataToStore, function() {
+//                     callback(favicon, title);
+//                 });
+//             }).catch(() => {
+//                 let fallbackData = {
+//                     favicon: 'Media/default-favicon.png',
+//                     title: getDomainName(tabUrl)
+//                 };
+//                 let dataToStore = {};
+//                 dataToStore[tabUrl] = fallbackData;
+//                 chrome.storage.local.set(dataToStore, function() {
+//                     callback(fallbackData.favicon, fallbackData.title);
+//                 });
+//             });
+//         }
+//     });
+// }
 
 
 // function fetchFaviconAndTitle(tabUrl, callback) {
